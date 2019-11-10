@@ -1,0 +1,34 @@
+import input from './inputs/input-day2';
+
+const solve = (limit: number) => (data: string): boolean => {
+  const counts = data.split('').reduce(
+    (dictionary, letter) => {
+      dictionary[letter] = isNaN(dictionary[letter])
+        ? 1
+        : dictionary[letter] + 1;
+      return dictionary;
+    },
+    {} as { [key: string]: number }
+  );
+  return Object.values(counts).filter(count => count === limit).length >= 1;
+};
+
+const satisfiesTwos = solve(2);
+const satisfiesThrees = solve(3);
+const getSatisfactionType = (line: string) => {
+  let [twos, threes] = [0, 0];
+  if (satisfiesThrees(line)) {
+    threes = 1;
+  }
+  if (satisfiesTwos(line)) {
+    twos = 1;
+  }
+  return [twos, threes];
+};
+
+const [x, y] = input
+  .split('\n')
+  .map(getSatisfactionType)
+  .reduce(([twos, threes], [v1, v2]) => [twos + v1, threes + v2]);
+
+console.log(x * y);

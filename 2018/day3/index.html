@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>test</title>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/6.1.2/system.js"
+    ></script>
+    <script type="text/javascript" src="out/day3.js"></script>
+    <script>
+      System.import('/out/day3.js').then(() => System.import('index'));
+    </script>
+  </head>
+  <body>
+    <canvas id="canvas" style="width: 1000px; height: 1000px"></canvas>
+  </body>
+</html>
