@@ -1,0 +1,13 @@
+{
+  "name": "aoc2017",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^8.0.57"
+  },
+  "dependencies": {
+    "core-js": "^2.5.1",
+    "ts-node": "^9.1.0"
+  }
+}
