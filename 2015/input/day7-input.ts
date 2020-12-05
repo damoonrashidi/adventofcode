@@ -1,4 +1,4 @@
-NOT dq -> dr
+export const input = `NOT dq -> dr
 kg OR kf -> kh
 ep OR eo -> eq
 44430 -> b
@@ -336,4 +336,6 @@ hv OR hu -> hw
 NOT hj -> hk
 gj RSHIFT 3 -> gl
 fo RSHIFT 3 -> fq
-he RSHIFT 2 -> hf
+he RSHIFT 2 -> hf`
+  .split('\n')
+  .map(x => x.split(' -> '));
