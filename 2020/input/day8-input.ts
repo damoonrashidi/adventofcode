@@ -6,7 +6,7 @@ export enum Instruction {
   NOOP = 'nop',
 }
 
-export const testInput: InstructionSet = `jmp +0
+export const testInput: InstructionSet = `nop +0
 acc +1
 jmp +4
 acc +3

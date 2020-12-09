@@ -1,6 +1,6 @@
 import { BagMap, BagContent, testInput, input } from './input/day7-input';
 
-const canContainGoldBag = (bags: BagContent[], map: BagMap): boolean => {
+function canContainGoldBag(bags: BagContent[], map: BagMap): boolean {
   if (bags.length === 0) {
     return false;
   } else if (bags.map(bag => bag.color).includes('shiny gold')) {
@@ -11,21 +11,25 @@ const canContainGoldBag = (bags: BagContent[], map: BagMap): boolean => {
     const content = map.get(bag.color) as BagContent[];
     return truth || canContainGoldBag(content, map);
   }, false);
-};
+}
 
-const costForBag = (color: string, map: BagMap, mem = 0): number => {
+function costForBag(color: string, map: BagMap, mem = 0): number {
   const children = map.get(color) as BagContent[];
 
   if (children.length === 0) {
     return mem;
   }
 
-  return children.reduce((total, content) => {
-    const cost = content.count * costForBag(content.color, map, content.count);
-    console.log(content, cost);
-    return total + cost;
-  }, 0);
-};
+  return (
+    mem +
+    children.reduce((total, content) => {
+      const cost =
+        content.count * costForBag(content.color, map, content.count);
+      console.log(content, cost);
+      return total + cost;
+    }, 0)
+  );
+}
 
 function puzzleOne(bags: BagMap): number {
   return [...bags.keys()].filter(color => {
