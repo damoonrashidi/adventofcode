@@ -13,21 +13,16 @@ function canContainGoldBag(bags: BagContent[], map: BagMap): boolean {
   }, false);
 }
 
-function costForBag(color: string, map: BagMap, mem = 0): number {
+function costForBag({ color, count }: BagContent, map: BagMap): number {
   const children = map.get(color) as BagContent[];
 
   if (children.length === 0) {
-    return mem;
+    return count;
   }
 
-  return (
-    mem +
-    children.reduce((total, content) => {
-      const cost =
-        content.count * costForBag(content.color, map, content.count);
-      console.log(content, cost);
-      return total + cost;
-    }, 0)
+  return children.reduce(
+    (total, bag) => total + bag.count * costForBag(bag, map),
+    0
   );
 }
 
@@ -37,18 +32,14 @@ function puzzleOne(bags: BagMap): number {
   }).length;
 }
 
-function puzzleTwo(bags: BagMap): number {
-  const start = bags.get('shiny gold') as BagContent[];
+function puzzleTwo(map: BagMap): number {
+  const bags = map.get('shiny gold') as BagContent[];
 
-  const startCost = start.map(({ count }) => count).reduce((a, b) => a + b, 0);
-
-  const totalCost = start.reduce(
-    (total, bag) => total + bag.count * costForBag(bag.color, bags),
+  return bags.reduce(
+    (total, bag) => total + bag.count * costForBag(bag, map),
     0
   );
-
-  return totalCost - startCost;
 }
 
 console.log('Puzzle one:', puzzleOne(input));
-console.log('Puzzle two:', puzzleTwo(input));
+console.log('Puzzle two:', puzzleTwo(testInput));
