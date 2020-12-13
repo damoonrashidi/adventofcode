@@ -6,13 +6,7 @@ function puzzleOne(adapters: number[]): number {
   let jump1 = 0;
   let jump3 = 0;
 
-  while (sortedAdapters.length > 0) {
-    const adapter = sortedAdapters.find(x => x - jolt <= 3);
-    if (!adapter) {
-      console.log(`COULD NOT FIND SUITABLE ADAPTER FOR ${jolt}`);
-      return 0;
-    }
-
+  for (let adapter of sortedAdapters) {
     if (adapter - jolt === 1) {
       jump1++;
     } else if (adapter - jolt > 1 && adapter - jolt <= 3) {
@@ -20,7 +14,6 @@ function puzzleOne(adapters: number[]): number {
     }
 
     jolt = adapter;
-    sortedAdapters = sortedAdapters.filter(x => x !== adapter);
   }
 
   return jump1 * (jump3 + 1);
