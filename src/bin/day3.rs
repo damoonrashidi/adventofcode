@@ -4,10 +4,10 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let file = fs::read_to_string(&args[1]).unwrap();
 
-    println!("{}", day1(file));
+    println!("{}", puzzle_one(file));
 }
 
-fn day1(input: String) -> u32 {
+fn puzzle_one(input: String) -> u32 {
     input
         .lines()
         .map(|line| line.split_at(line.len() / 2))

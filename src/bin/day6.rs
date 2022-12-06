@@ -4,10 +4,10 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let file = fs::read_to_string(&args[1]).unwrap();
 
-    println!("{}", day1(file));
+    println!("{}", puzzle_one(file));
 }
 
-fn day1(input: String) -> usize {
+fn puzzle_one(input: String) -> usize {
     for i in 0..(input.len() - 3) {
         let slice: HashSet<char> = HashSet::from(
             input[i..i + 4]
@@ -25,7 +25,7 @@ fn day1(input: String) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use crate::day1;
+    use crate::puzzle_one;
 
     #[test]
     fn day_6() {
@@ -36,7 +36,7 @@ mod tests {
             ("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 10),
             ("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 11),
         ] {
-            assert_eq!(day1(case.into()), expected);
+            assert_eq!(puzzle_one(case.into()), expected);
         }
     }
 }
