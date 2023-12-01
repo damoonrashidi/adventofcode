@@ -7,3 +7,16 @@ edition = "2021"
 
 [dependencies]
 regex = "1.7.0"
+
+[lints.clippy]
+all = "deny"
+pedantic = "deny"
+
+[lints.rust]
+unsafe_code = "forbid"
+dead_code = "deny"
+unused_variables = "deny"
+unused_imports = "deny"
+unused_import_braces = "deny"
+missing_debug_implementations = "deny"
+unreachable_pub = "deny"
