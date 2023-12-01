@@ -9,7 +9,7 @@ fn main() {
     println!("{}", puzzle_two(&file));
 }
 
-fn puzzle_one(input: &String) -> usize {
+fn puzzle_one(input: &str) -> usize {
     input
         .lines()
         .map(|line| {
@@ -26,7 +26,7 @@ fn puzzle_one(input: &String) -> usize {
         .len()
 }
 
-fn puzzle_two(input: &String) -> usize {
+fn puzzle_two(input: &str) -> usize {
     input
         .lines()
         .map(|line| {

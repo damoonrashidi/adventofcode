@@ -10,12 +10,9 @@ fn main() {
 
 fn puzzle_one(input: &String) -> usize {
     for i in 0..(input.len() - 3) {
-        let slice: HashSet<char> = HashSet::from(
-            input[i..i + 4]
+        let slice: HashSet<char> = input[i..i + 4]
                 .chars()
-                .into_iter()
-                .collect::<HashSet<char>>(),
-        );
+                .collect::<HashSet<char>>();
 
         if slice.len() == 4 {
             return i + 4;
@@ -26,12 +23,9 @@ fn puzzle_one(input: &String) -> usize {
 
 fn puzzle_two(input: &String) -> usize {
     for i in 0..(input.len() - 3) {
-        let slice: HashSet<char> = HashSet::from(
-            input[i..i + 14]
+        let slice: HashSet<char> = input[i..i + 14]
                 .chars()
-                .into_iter()
-                .collect::<HashSet<char>>(),
-        );
+                .collect::<HashSet<char>>();
 
         if slice.len() == 14 {
             return i + 14;
