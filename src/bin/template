@@ -1,0 +1,13 @@
+fn main() {
+    let input = include_str!("../inputs/20_.txt").trim();
+
+    println!("puzzle one: {}", puzzle_one(input));
+    println!("puzzle one: {}", puzzle_two(input));
+}
+
+fn puzzle_one(input: &str) -> usize {
+    input.len()
+}
+fn puzzle_two(input: &str) -> usize {
+    input.len()
+}

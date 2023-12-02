@@ -1,10 +1,7 @@
-use std::{env, fs};
-
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let file = fs::read_to_string(&args[1]).unwrap();
+    let input = include_str!("../inputs/2022_1.txt");
 
-    println!("{}", puzzle_one(&file));
+    println!("{}", puzzle_one(input));
 }
 
 fn puzzle_one(input: &str) -> usize {

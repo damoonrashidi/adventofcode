@@ -1,18 +1,15 @@
-use std::{collections::HashSet, env, fs};
+use std::collections::HashSet;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let file = fs::read_to_string(&args[1]).unwrap();
+    let input = include_str!("../inputs/2022_6.txt");
 
-    println!("{}", puzzle_one(&file));
-    println!("{}", puzzle_two(&file));
+    println!("{}", puzzle_one(input));
+    println!("{}", puzzle_two(input));
 }
 
-fn puzzle_one(input: &String) -> usize {
+fn puzzle_one(input: &str) -> usize {
     for i in 0..(input.len() - 3) {
-        let slice: HashSet<char> = input[i..i + 4]
-                .chars()
-                .collect::<HashSet<char>>();
+        let slice: HashSet<char> = input[i..i + 4].chars().collect::<HashSet<char>>();
 
         if slice.len() == 4 {
             return i + 4;
@@ -21,11 +18,9 @@ fn puzzle_one(input: &String) -> usize {
     panic!("No marker found");
 }
 
-fn puzzle_two(input: &String) -> usize {
+fn puzzle_two(input: &str) -> usize {
     for i in 0..(input.len() - 3) {
-        let slice: HashSet<char> = input[i..i + 14]
-                .chars()
-                .collect::<HashSet<char>>();
+        let slice: HashSet<char> = input[i..i + 14].chars().collect::<HashSet<char>>();
 
         if slice.len() == 14 {
             return i + 14;
@@ -47,7 +42,7 @@ mod tests {
             ("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 10),
             ("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 11),
         ] {
-            assert_eq!(puzzle_one(&case.into()), expected);
+            assert_eq!(puzzle_one(case), expected);
         }
     }
 
@@ -60,7 +55,7 @@ mod tests {
             ("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 29),
             ("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 26),
         ] {
-            assert_eq!(puzzle_two(&case.into()), expected);
+            assert_eq!(puzzle_two(case), expected);
         }
     }
 }

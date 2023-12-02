@@ -1,12 +1,10 @@
 use regex::Regex;
-use std::{env, fs};
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let file = fs::read_to_string(&args[1]).unwrap();
+    let input = include_str!("../inputs/2022_4.txt");
 
-    println!("{}", puzzle_one(&file));
-    println!("{}", puzzle_two(&file));
+    println!("{}", puzzle_one(input));
+    println!("{}", puzzle_two(input));
 }
 
 fn puzzle_one(input: &str) -> usize {
