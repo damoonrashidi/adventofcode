@@ -8,6 +8,7 @@ fn main() {
 fn puzzle_one(input: &str) -> usize {
     input.len()
 }
+
 fn puzzle_two(input: &str) -> usize {
     input.len()
 }
