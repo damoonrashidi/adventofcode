@@ -1,20 +1,19 @@
-use std::ops::Range;
+use std::collections::HashMap;
 
 fn main() {
     let input = include_str!("../inputs/2023_3.txt").trim();
 
-    println!("puzzle one: {}", puzzle_one(input));
-    println!("puzzle one: {}", puzzle_two(input));
+    let map: Vec<Vec<char>> = input.lines().map(|line| line.chars().collect()).collect();
+    println!("puzzle one: {}", puzzle_one(&map));
+    println!("puzzle two: {}", puzzle_two(&map));
 }
 
-fn puzzle_one(input: &str) -> usize {
-    let map = parse_map(input);
+fn puzzle_one(map: &Vec<Vec<char>>) -> usize {
     let mut nums: Vec<usize> = vec![];
 
     let mut y = 0;
     let mut x = 0;
     while (0..map.len()).contains(&y) {
-        println!("Line: {}", y + 1);
         while (0..map[0].len()).contains(&x) {
             let mut num = vec![];
             while x < map[0].len() && map[y][x].is_ascii_digit() {
@@ -24,77 +23,106 @@ fn puzzle_one(input: &str) -> usize {
             if !num.is_empty() {
                 let num_str = num.into_iter().collect::<String>();
                 let num: usize = num_str.parse().unwrap();
-                #[allow(clippy::range_plus_one)]
-                if is_adjacent_to_special(x - num_str.len()..x + 1, y, &map) {
-                    println!("{num} IS adjacent");
+                if is_adjacent_to_special(x - num_str.len(), x, y, map) {
                     nums.push(num);
-                } else {
-                    println!("{num} isn't adjacent to any special chars");
                 }
             }
             x += 1;
         }
         x = 0;
         y += 1;
-        println!("\n\n");
     }
 
     nums.into_iter().sum()
 }
 
-fn puzzle_two(input: &str) -> usize {
-    input.len()
+fn puzzle_two(map: &Vec<Vec<char>>) -> usize {
+    let mut gear_map: HashMap<String, Vec<usize>> = HashMap::new();
+
+    let mut y = 0;
+    let mut x = 0;
+    while (0..map.len()).contains(&y) {
+        while (0..map[0].len()).contains(&x) {
+            let mut num = vec![];
+            while x < map[0].len() && map[y][x].is_ascii_digit() {
+                num.push(map[y][x]);
+                x += 1;
+            }
+            if !num.is_empty() {
+                let num_str = num.into_iter().collect::<String>();
+                let num: usize = num_str.parse().unwrap();
+
+                let gears = get_adjacent_gear_locations(x - num_str.len(), x, y, map);
+                for gear in gears {
+                    if let Some(list) = gear_map.get_mut(&gear) {
+                        list.push(num);
+                    } else {
+                        gear_map.insert(gear, vec![num]);
+                    }
+                }
+            }
+            x += 1;
+        }
+        x = 0;
+        y += 1;
+    }
+
+    gear_map
+        .values()
+        .filter(|list| list.len() == 2)
+        .map(|list| list.iter().product::<usize>())
+        .sum()
 }
 
-#[allow(unused)]
-fn is_adjacent_to_special(x: Range<usize>, y: usize, map: &[Vec<char>]) -> bool {
-    let start = x.start.max(1);
-    let end = x.end.min(map[0].len() - 1);
+fn get_adjacent_gear_locations(
+    x_min: usize,
+    x_max: usize,
+    y: usize,
+    map: &[Vec<char>],
+) -> Vec<String> {
+    let mut locations = vec![];
 
-    if y > 0 {
-        let above = map.get(y - 1).unwrap();
-        if above[(start - 1)..end].iter().any(|c| is_special_char(*c)) {
-            return true;
-        }
-    };
-    if y < map.len() - 1 {
-        let below = map.get(y + 1).unwrap();
-        if below[(start - 1)..end].iter().any(|c| is_special_char(*c)) {
-            return true;
-        }
-    };
-    if x.start > 0 {
-        let left = map[y][x.start - 1];
-        if is_special_char(left) {
-            return true;
+    let y_start = y.saturating_sub(1);
+    let y_end = (y + 1).min(map.len() - 1);
+    let x_start = x_min.saturating_sub(1);
+    let x_end = x_max.min(map[0].len() - 1);
+
+    (y_start..=y_end).for_each(|y| {
+        (x_start..=x_end).for_each(|x| {
+            if map[y][x] == '*' {
+                locations.push(format!("{x}:{y}"));
+            }
+        });
+    });
+
+    locations
+}
+
+fn is_adjacent_to_special(x_min: usize, x_max: usize, y: usize, map: &[Vec<char>]) -> bool {
+    let y_start = y.saturating_sub(1);
+    let y_end = (y + 1).min(map.len() - 1);
+    let x_start = x_min.saturating_sub(1);
+    let x_end = x_max.min(map[0].len() - 1);
+
+    #[allow(clippy::needless_range_loop)]
+    for y in y_start..=y_end {
+        for x in x_start..=x_end {
+            let c = map[y][x];
+            if !(c.is_ascii_digit() || c == '.') {
+                return true;
+            }
         }
     }
-    if x.end < map[0].len() - 1 {
-        let right = map[y][x.end - 1];
-        if is_special_char(right) {
-            return true;
-        }
-    }
-
     false
-}
-
-fn parse_map(map: &str) -> Vec<Vec<char>> {
-    map.lines().map(|line| line.chars().collect()).collect()
-}
-
-fn is_special_char(c: char) -> bool {
-    !(c.is_ascii_digit() || c == '.')
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::puzzle_one;
+    use crate::puzzle_two;
 
     #[test]
     fn test() {
-        let actual = puzzle_one(
-            r"467..114..
+        let map = r"467..114..
 ...*......
 ..35..633.
 ......#...
@@ -104,21 +132,11 @@ mod tests {
 ......755.
 ...$.*....
 .664.598.."
-                .trim(),
-        );
+            .lines()
+            .map(|line| line.chars().collect())
+            .collect();
 
-        assert_eq!(actual, 4361);
-    }
-
-    #[test]
-    fn two() {
-        let actual = puzzle_one(
-            r"
-.......206......*....668..728$............529..........*93........................-...833.713..
-..........*585...969............810..522............866..............254.....570........*....*..."
-                .trim(),
-        );
-
-        assert_eq!(actual, 206 + 728 + 93 + 833 + 713 + 585 + 969 + 866);
+        let actual = puzzle_two(&map);
+        assert_eq!(actual, 47835);
     }
 }

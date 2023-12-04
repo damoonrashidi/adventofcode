@@ -2,7 +2,7 @@ fn main() {
     let input = include_str!("../inputs/20_.txt").trim();
 
     println!("puzzle one: {}", puzzle_one(input));
-    println!("puzzle one: {}", puzzle_two(input));
+    println!("puzzle two: {}", puzzle_two(input));
 }
 
 fn puzzle_one(input: &str) -> usize {
@@ -11,4 +11,15 @@ fn puzzle_one(input: &str) -> usize {
 
 fn puzzle_two(input: &str) -> usize {
     input.len()
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::puzzle_one;
+
+    #[test]
+    fn test() {
+        let actual = puzzle_one();
+        assert_eq!(actual, 0);
+    }
 }
