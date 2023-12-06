@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::{ops::Range, sync::mpsc, thread};
 
 fn main() {
     let input = include_str!("../inputs/2023/5.txt").trim();
@@ -56,28 +56,43 @@ fn puzzle_two(input: &str) -> usize {
     }
 
     let map_tunnel = parse_maps(input);
-    let mut min = usize::MAX;
 
-    for seed_range in seeds {
-        for seed in seed_range {
-            let mut ins = seed;
-            for ranges in &map_tunnel {
-                ins = if let Some((to, from)) = ranges
-                    .iter()
-                    .find(|(_, from)| (from.start..=from.end).contains(&ins))
-                {
-                    to.start + from.start.abs_diff(ins)
-                } else {
-                    ins
-                };
-            }
+    let (tx, rx) = mpsc::channel::<usize>();
 
-            if ins < min {
-                min = ins;
+    for seeds in &seeds {
+        let tx = tx.clone();
+        let seeds = seeds.clone();
+        let map_tunnel = map_tunnel.clone();
+        thread::spawn(move || {
+            let mut min = usize::MAX;
+            for seed in seeds {
+                let mut ins = seed;
+                for ranges in &map_tunnel {
+                    ins = if let Some((to, from)) = ranges
+                        .iter()
+                        .find(|(_, from)| (from.start..=from.end).contains(&ins))
+                    {
+                        to.start + from.start.abs_diff(ins)
+                    } else {
+                        ins
+                    };
+                }
+
+                if ins < min {
+                    min = ins;
+                }
             }
-        }
+            tx.send(min).unwrap();
+        });
     }
 
+    let mut min = usize::MAX;
+
+    for local in rx.iter().take(seeds.len() - 1) {
+        if local < min {
+            min = local;
+        }
+    }
     min
 }
 
