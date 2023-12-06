@@ -40,7 +40,46 @@ fn puzzle_one(input: &str) -> usize {
 }
 
 fn puzzle_two(input: &str) -> usize {
-    input.len()
+    let (first_line, _) = input.split_once('\n').unwrap();
+    let seeds_strs: Vec<&str> = first_line
+        .strip_prefix("seeds: ")
+        .unwrap()
+        .split_whitespace()
+        .collect();
+
+    let mut seeds: Vec<Range<usize>> = vec![];
+
+    for i in 0..seeds_strs.len() - 1 {
+        let start = seeds_strs[i].parse().unwrap();
+        let amount: usize = seeds_strs[i + 1].parse().unwrap();
+        seeds.push(start..(start + amount));
+    }
+
+    let map_tunnel = parse_maps(input);
+    let mut min = usize::MAX;
+
+    for seed_range in seeds {
+        println!("processing {seed_range:?}");
+        for seed in seed_range {
+            println!("checking {seed}");
+            let mut ins = seed;
+            for ranges in &map_tunnel {
+                ins = if let Some((to, from)) = ranges.iter().find(|(_, from)| from.contains(&ins))
+                {
+                    map(ins, from.clone(), to.clone())
+                } else {
+                    ins
+                };
+            }
+
+            if ins < min {
+                println!("found new min at {ins}");
+                min = ins;
+            }
+        }
+    }
+
+    min
 }
 
 fn parse_maps(input: &str) -> Vec<Vec<(Range<usize>, Range<usize>)>> {
@@ -57,11 +96,7 @@ fn parse_maps(input: &str) -> Vec<Vec<(Range<usize>, Range<usize>)>> {
                         .map(|str| str.parse().unwrap())
                         .collect::<Vec<usize>>();
 
-                    let to_start = a[0];
-                    let from_start = a[1];
-                    let len = a[2];
-
-                    (to_start..to_start + len, from_start..from_start + len)
+                    (a[0]..a[0] + a[2], a[1]..a[1] + a[2])
                 })
                 .collect()
         })
@@ -71,17 +106,16 @@ fn parse_maps(input: &str) -> Vec<Vec<(Range<usize>, Range<usize>)>> {
 #[inline]
 #[must_use]
 pub fn map(value: usize, from: Range<usize>, to: Range<usize>) -> usize {
-    let diff = from.start.abs_diff(value);
-    to.start + diff
+    to.start + from.start.abs_diff(value)
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::puzzle_one;
+    use crate::puzzle_two;
 
     #[test]
     fn test() {
-        let actual = puzzle_one(
+        let actual = puzzle_two(
             r"seeds: 79 14 55 13
 
         seed-to-soil map:
