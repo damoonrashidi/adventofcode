@@ -24,7 +24,7 @@ fn puzzle_one(input: &str) -> usize {
         let mut ins = seed;
         for ranges in &map_tunnel {
             ins = if let Some((to, from)) = ranges.iter().find(|(_, from)| from.contains(&ins)) {
-                map(ins, from.clone(), to.clone())
+                to.start + from.start.abs_diff(ins)
             } else {
                 ins
             };
@@ -49,7 +49,7 @@ fn puzzle_two(input: &str) -> usize {
 
     let mut seeds: Vec<Range<usize>> = vec![];
 
-    for i in 0..seeds_strs.len() - 1 {
+    for i in (0..seeds_strs.len() - 1).step_by(2) {
         let start = seeds_strs[i].parse().unwrap();
         let amount: usize = seeds_strs[i + 1].parse().unwrap();
         seeds.push(start..(start + amount));
@@ -59,21 +59,20 @@ fn puzzle_two(input: &str) -> usize {
     let mut min = usize::MAX;
 
     for seed_range in seeds {
-        println!("processing {seed_range:?}");
         for seed in seed_range {
-            println!("checking {seed}");
             let mut ins = seed;
             for ranges in &map_tunnel {
-                ins = if let Some((to, from)) = ranges.iter().find(|(_, from)| from.contains(&ins))
+                ins = if let Some((to, from)) = ranges
+                    .iter()
+                    .find(|(_, from)| (from.start..=from.end).contains(&ins))
                 {
-                    map(ins, from.clone(), to.clone())
+                    to.start + from.start.abs_diff(ins)
                 } else {
                     ins
                 };
             }
 
             if ins < min {
-                println!("found new min at {ins}");
                 min = ins;
             }
         }
@@ -101,12 +100,6 @@ fn parse_maps(input: &str) -> Vec<Vec<(Range<usize>, Range<usize>)>> {
                 .collect()
         })
         .collect()
-}
-
-#[inline]
-#[must_use]
-pub fn map(value: usize, from: Range<usize>, to: Range<usize>) -> usize {
-    to.start + from.start.abs_diff(value)
 }
 
 #[cfg(test)]
@@ -150,6 +143,6 @@ mod tests {
         60 56 37
         56 93 4",
         );
-        assert_eq!(actual, 35);
+        assert_eq!(actual, 46);
     }
 }
