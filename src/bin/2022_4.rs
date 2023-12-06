@@ -1,7 +1,7 @@
 use regex::Regex;
 
 fn main() {
-    let input = include_str!("../inputs/2022_4.txt");
+    let input = include_str!("../inputs/2022/4.txt");
 
     println!("{}", puzzle_one(input));
     println!("{}", puzzle_two(input));

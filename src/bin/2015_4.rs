@@ -1,5 +1,5 @@
 fn main() {
-    let input = include_str!("../inputs/2015_4.txt").trim();
+    let input = include_str!("../inputs/2015/4.txt").trim();
 
     println!("puzzle one: {}", puzzle_one(input));
     println!("puzzle one: {}", puzzle_two(input));

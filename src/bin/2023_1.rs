@@ -4,12 +4,12 @@ fn main() {
     println!("part one: {}", part_one());
     println!(
         "part two: {}",
-        part_two(include_str!("../inputs/2023_1.txt").lines())
+        part_two(include_str!("../inputs/2023/1.txt").lines())
     );
 }
 
 fn part_one() -> u32 {
-    include_str!("../inputs/2023_1.txt")
+    include_str!("../inputs/2023/1.txt")
         .lines()
         .map(|line| {
             let x = line

@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 fn main() {
-    let input = include_str!("../inputs/2015_3.txt").trim();
+    let input = include_str!("../inputs/2015/3.txt").trim();
 
     println!("puzzle one: {}", puzzle_one(input));
     println!("puzzle one: {}", puzzle_two(input));

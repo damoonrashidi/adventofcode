@@ -1,5 +1,5 @@
 fn main() {
-    let input = include_str!("../inputs/2022_1.txt");
+    let input = include_str!("../inputs/2022/1.txt");
 
     println!("{}", puzzle_one(input));
 }
