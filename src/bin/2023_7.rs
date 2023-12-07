@@ -27,7 +27,22 @@ fn puzzle_one(input: &str) -> usize {
 }
 
 fn puzzle_two(input: &str) -> usize {
-    input.len()
+    let mut hands = parse(input);
+
+    hands.sort_by(|a, b| {
+        let a_value = best_possible_value(&a.0);
+        let b_value = best_possible_value(&b.0);
+        match a_value.cmp(&b_value) {
+            Ordering::Equal => highest_value_card(&a.0, &b.0),
+            x => x,
+        }
+    });
+
+    hands
+        .into_iter()
+        .enumerate()
+        .map(|(rank, (_, bid))| (rank + 1) * bid)
+        .sum()
 }
 
 fn parse(input: &str) -> Vec<(Chars, usize)> {
@@ -66,6 +81,42 @@ fn highest_value_card(a: &Chars, b: &Chars) -> Ordering {
     Ordering::Equal
 }
 
+fn best_possible_value(hand: &Chars) -> usize {
+    // if no jokers
+    let js = hand.clone().filter(|c| c == &'J').count();
+    if js == 0 || js == 5 {
+        return get_value(hand);
+    }
+
+    // duplicate highest count
+    let mut counts: HashMap<char, usize> = HashMap::new();
+    hand.clone().filter(|c| c != &'J').for_each(|c| {
+        let count = counts.get(&c).unwrap_or(&0);
+        counts.insert(c, count + 1);
+    });
+
+    let mut without_js: Vec<char> = hand.clone().filter(|c| c != &'J').collect();
+
+    let (most_common_c, _) = counts
+        .iter()
+        .reduce(|(hc, hi_count), (c, count)| {
+            if count > hi_count {
+                (c, count)
+            } else {
+                (hc, hi_count)
+            }
+        })
+        .unwrap();
+
+    for _ in 0..js {
+        without_js.push(*most_common_c);
+    }
+
+    let new_hand: String = without_js.into_iter().collect();
+
+    get_value(&new_hand.chars())
+}
+
 fn get_value(hand: &Chars) -> usize {
     let mut map = HashMap::<char, usize>::new();
 
@@ -101,7 +152,7 @@ fn get_value(hand: &Chars) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use crate::puzzle_one;
+    use crate::{puzzle_one, puzzle_two};
 
     #[test]
     fn test() {
@@ -115,12 +166,17 @@ QQQJA 483
         );
         assert_eq!(actual, 6440);
     }
+
     #[test]
-    fn test_two() {
-        let actual = puzzle_one(
-            r"AAAKA 0
-AAQAA 50",
+    fn test_puzzle_two() {
+        let actual = puzzle_two(
+            r"32T3K 765
+T55J5 684
+KK677 28
+KTJJT 220
+QQQJA 483
+",
         );
-        assert_eq!(actual, 50);
+        assert_eq!(actual, 5905);
     }
 }
