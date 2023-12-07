@@ -4,7 +4,7 @@ fn main() {
     let input = include_str!("../inputs/2015/6.txt").trim();
 
     println!("puzzle one: {}", puzzle_one(input));
-    println!("puzzle one: {}", puzzle_two(input));
+    println!("puzzle two: {}", puzzle_two(input));
 }
 
 #[derive(Debug)]
