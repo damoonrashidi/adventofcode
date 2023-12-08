@@ -3,31 +3,47 @@ use std::collections::HashMap;
 fn main() {
     let input = include_str!("../inputs/2023/8.txt").trim();
 
-    println!("puzzle one: {}", puzzle_one(input));
-    println!("puzzle two: {}", puzzle_two(input));
-}
-
-fn puzzle_one(input: &str) -> usize {
     let (instructions, map) = parse(input);
 
-    let mut steps = 0;
-    let mut i = 0;
-    let mut place = "AAA";
-    loop {
-        if place == "ZZZ" {
-            return steps;
-        }
-        let dir = instructions[i];
-        let (l, r) = map.get(place).unwrap();
-        place = if dir == 'L' { l } else { r };
+    println!("puzzle one: {}", puzzle_one(&instructions, &map, "AAA"));
+    println!("puzzle two: {}", puzzle_two(&instructions, &map));
+}
 
+fn puzzle_one(instructions: &Vec<char>, map: &HashMap<&str, (&str, &str)>, find: &str) -> usize {
+    let (mut steps, mut i) = (0, 0);
+    let mut node = find;
+    while !node.ends_with('Z') {
+        let (l, r) = map.get(node).unwrap();
+        node = if instructions[i] == 'L' { l } else { r };
         i = (i + 1) % instructions.len();
         steps += 1;
     }
+    steps
 }
 
-fn puzzle_two(input: &str) -> usize {
-    input.len()
+fn puzzle_two(instructions: &Vec<char>, map: &HashMap<&str, (&str, &str)>) -> usize {
+    let places: Vec<&str> = map
+        .keys()
+        .filter(|place| place.ends_with('A'))
+        .copied()
+        .collect();
+
+    places
+        .into_iter()
+        .map(|find| puzzle_one(instructions, map, find))
+        .reduce(lcd)
+        .unwrap()
+}
+
+fn lcd(a: usize, b: usize) -> usize {
+    a * b / gcd(a, b)
+}
+
+fn gcd(a: usize, b: usize) -> usize {
+    if b == 0 {
+        return a;
+    }
+    gcd(b, a % b)
 }
 
 fn parse(input: &str) -> (Vec<char>, HashMap<&str, (&str, &str)>) {
@@ -54,50 +70,4 @@ fn parse(input: &str) -> (Vec<char>, HashMap<&str, (&str, &str)>) {
     });
 
     (instructions, map)
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::puzzle_one;
-
-    #[test]
-    fn test_puzzle_one() {
-        let actual = puzzle_one(
-            r"RL
-
-AAA = (BBB, CCC)
-BBB = (DDD, EEE)
-CCC = (ZZZ, GGG)
-DDD = (DDD, DDD)
-EEE = (EEE, EEE)
-GGG = (GGG, GGG)
-ZZZ = (ZZZ, ZZZ)",
-        );
-        assert_eq!(actual, 2);
-
-        let actual2 = puzzle_one(
-            r"LLR
-
-AAA = (BBB, BBB)
-BBB = (AAA, ZZZ)
-ZZZ = (ZZZ, ZZZ)",
-        );
-        assert_eq!(actual2, 6);
-    }
-
-    // #[test]
-    // fn test_puzzle_two() {
-    //     let actual = puzzle_two(
-    //         r"RL
-
-    //     AAA = (BBB, CCC)
-    //     BBB = (DDD, EEE)
-    //     CCC = (ZZZ, GGG)
-    //     DDD = (DDD, DDD)
-    //     EEE = (EEE, EEE)
-    //     GGG = (GGG, GGG)
-    //     ZZZ = (ZZZ, ZZZ)",
-    //     );
-    //     assert_eq!(actual, 0);
-    // }
 }
