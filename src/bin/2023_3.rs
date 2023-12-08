@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 fn main() {
-    let input = include_str!("../inputs/2023/3.txt").trim();
+    let input = include_str!("../../inputs/2023/3.txt").trim();
 
     let map: Vec<Vec<char>> = input.lines().map(|line| line.chars().collect()).collect();
     println!("puzzle one: {}", puzzle_one(&map));

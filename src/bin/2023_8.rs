@@ -1,10 +1,8 @@
 use std::collections::HashMap;
 
 fn main() {
-    let input = include_str!("../inputs/2023/8.txt").trim();
-
+    let input = include_str!("../../inputs/2023/8.txt").trim();
     let (instructions, map) = parse(input);
-
     println!("puzzle one: {}", puzzle_one(&instructions, &map, "AAA"));
     println!("puzzle two: {}", puzzle_two(&instructions, &map));
 }

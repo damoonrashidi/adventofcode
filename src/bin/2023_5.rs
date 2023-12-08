@@ -1,7 +1,7 @@
 use std::{ops::Range, sync::mpsc, thread};
 
 fn main() {
-    let input = include_str!("../inputs/2023/5.txt").trim();
+    let input = include_str!("../../inputs/2023/5.txt").trim();
 
     println!("puzzle one: {}", puzzle_one(input));
     println!("puzzle two: {}", puzzle_two(input));

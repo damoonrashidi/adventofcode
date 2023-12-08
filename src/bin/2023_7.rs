@@ -1,7 +1,7 @@
 use std::{cmp::Ordering, collections::HashMap, str::Chars};
 
 fn main() {
-    let input = include_str!("../inputs/2023/7.txt").trim();
+    let input = include_str!("../../inputs/2023/7.txt").trim();
 
     println!("puzzle one: {}", puzzle_one(input));
     println!("puzzle two: {}", puzzle_two(input));
