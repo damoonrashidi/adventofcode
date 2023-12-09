@@ -5,21 +5,17 @@ fn main() {
 }
 
 fn puzzle_one(input: &[Vec<isize>]) -> isize {
-    let mut zeroes = vec![];
-    let mut a = vec![];
-    for row in input {
-        zeroes.push(make_all_zeroes(vec![row.clone()]));
-    }
-    for list in zeroes {
-        let next = list
-            .iter()
-            .filter_map(|row| row.last())
-            .rev()
-            .copied()
-            .sum::<isize>();
-        a.push(next);
-    }
-    a.into_iter().sum()
+    input
+        .iter()
+        .map(|row| {
+            make_all_zeroes(vec![row.clone()])
+                .iter()
+                .filter_map(|row| row.last())
+                .rev()
+                .copied()
+                .sum::<isize>()
+        })
+        .sum()
 }
 
 fn puzzle_two(input: &[Vec<isize>]) -> usize {
@@ -48,14 +44,6 @@ fn parse(input: &str) -> Vec<Vec<isize>> {
                 .collect()
         })
         .collect()
-}
-
-#[allow(unused)]
-fn kinda_fib(ans: isize, list: &[isize]) -> isize {
-    if list.is_empty() {
-        return ans;
-    }
-    kinda_fib(list.first().unwrap() - ans, &list[1..])
 }
 
 #[cfg(test)]
