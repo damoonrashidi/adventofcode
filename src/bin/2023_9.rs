@@ -12,14 +12,22 @@ fn puzzle_one(input: &[Vec<isize>]) -> isize {
                 .iter()
                 .filter_map(|row| row.last())
                 .rev()
-                .copied()
                 .sum::<isize>()
         })
         .sum()
 }
 
-fn puzzle_two(input: &[Vec<isize>]) -> usize {
-    input.len()
+fn puzzle_two(input: &[Vec<isize>]) -> isize {
+    input
+        .iter()
+        .map(|row| {
+            make_all_zeroes(vec![row.clone()])
+                .iter()
+                .filter_map(|row| row.first())
+                .rev()
+                .fold(0, |a, b| b - a)
+        })
+        .sum()
 }
 
 fn make_all_zeroes(mut tail: Vec<Vec<isize>>) -> Vec<Vec<isize>> {
@@ -40,7 +48,7 @@ fn parse(input: &str) -> Vec<Vec<isize>> {
         .lines()
         .map(|line| {
             line.split_whitespace()
-                .map(|value| value.parse().unwrap())
+                .filter_map(|value| value.parse().ok())
                 .collect()
         })
         .collect()
@@ -63,7 +71,11 @@ mod tests {
 
     #[test]
     fn test_puzzle_two() {
-        let actual = puzzle_two(&parse(r""));
-        assert_eq!(actual, 0);
+        let actual = puzzle_two(&parse(
+            r"0 3 6 9 12 15
+1 3 6 10 15 21
+10 13 16 21 30 45",
+        ));
+        assert_eq!(actual, 2);
     }
 }
