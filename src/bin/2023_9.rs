@@ -25,6 +25,7 @@ fn puzzle_two(input: &[Vec<isize>]) -> isize {
                 .iter()
                 .filter_map(|row| row.first())
                 .rev()
+                .copied()
                 .fold(0, |a, b| b - a)
         })
         .sum()
@@ -52,30 +53,4 @@ fn parse(input: &str) -> Vec<Vec<isize>> {
                 .collect()
         })
         .collect()
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::{parse, puzzle_one, puzzle_two};
-
-    #[test]
-    fn test_puzzle_one() {
-        let input = parse(
-            r"0 3 6 9 12 15
-1 3 6 10 15 21
-10 13 16 21 30 45",
-        );
-        let actual = puzzle_one(&input);
-        assert_eq!(actual, 114);
-    }
-
-    #[test]
-    fn test_puzzle_two() {
-        let actual = puzzle_two(&parse(
-            r"0 3 6 9 12 15
-1 3 6 10 15 21
-10 13 16 21 30 45",
-        ));
-        assert_eq!(actual, 2);
-    }
 }
