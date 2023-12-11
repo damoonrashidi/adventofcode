@@ -1,10 +1,10 @@
-use std::{collections::HashSet, fmt::Display};
+use std::collections::HashSet;
 
 fn main() {
     let input = include_str!("../../inputs/2023/10.txt");
     let map = parse(input);
 
-    println!("puzzle one: {}", puzzle_one(&map));
+    println!("puzzle one: {}", puzzle_one(&map, Tile::Vertical));
     // println!("puzzle two: {}", puzzle_two(&map));
 }
 
@@ -43,72 +43,60 @@ impl Coord {
     }
 }
 
-fn puzzle_one(map: &Map) -> usize {
-    let mut node = get_starting_pos(map);
-    let mut visits: HashSet<Coord> = HashSet::new();
+fn puzzle_one(map: &Map, start_type: Tile) -> usize {
+    let mut map = map.clone();
+    let mut node = get_starting_pos(&map);
     let start = node;
+    let mut last = start;
     let mut steps = 0;
-    let mut revisits: Vec<Coord> = vec![];
-
-    visits.insert(start);
-
-    println!("starting at {start:?}");
+    map[start.1][start.0] = start_type;
 
     while node != start || steps == 0 {
-        let travesable_nodes: Vec<Coord> = get_connecting_nodes(node, map)
+        let travesable_nodes: Vec<Coord> = get_connecting_nodes(node, &map)
             .into_iter()
-            .filter(|n| {
-                if n == &start && steps <= 1 {
-                    false
-                } else {
-                    !visits.contains(n) || n == &start
-                }
-            })
+            .filter(|n| n != &last)
             .collect();
 
-        #[allow(clippy::needless_range_loop)]
-        for y in node.1.saturating_sub(20)..node.1 + 20 {
-            for x in node.0.saturating_sub(40)..(node.0 + 40) {
-                if Coord(x, y) == node {
-                    print!("x");
-                }
-                if visits.contains(&Coord(x, y)) {
-                    print!("*");
-                } else if travesable_nodes.contains(&Coord(x, y)) {
-                    let n = map[y][x];
-                    print!("{n}");
-                } else {
-                    print!(".");
-                }
-            }
-            println!();
-        }
-
-        if let Some(next) = travesable_nodes.first() {
-            node = *next;
-        } else if let Some(next) = revisits.pop() {
-            node = next;
+        last = node;
+        node = if let Some(next) = travesable_nodes.first() {
+            *next
         } else {
-            println!("stopping at {node:?}");
-            return steps / 2;
-        }
-
-        travesable_nodes
-            .iter()
-            .skip(1)
-            .for_each(|future| revisits.push(*future));
-
-        visits.insert(node);
+            start
+        };
         steps += 1;
     }
-    println!("stopping at {node:?}");
 
     steps / 2
 }
 
 #[allow(unused)]
-fn puzzle_two(_map: &Map) -> usize {
-    0
+fn puzzle_two(map: &Map) -> usize {
+    let mut map = map.clone();
+    let mut node = get_starting_pos(&map);
+    let mut visits: HashSet<Coord> = HashSet::new();
+    let start = node;
+    let mut steps = 0;
+    map[start.1][start.0] = Tile::Vertical;
+
+    visits.insert(start);
+
+    while node != start || steps == 0 {
+        let travesable_nodes: Vec<Coord> = get_connecting_nodes(node, &map)
+            .into_iter()
+            .filter(|n| !visits.contains(n))
+            .collect();
+
+        if let Some(next) = travesable_nodes.first() {
+            node = *next;
+        } else {
+            node = start;
+        }
+
+        visits.insert(node);
+        steps += 1;
+    }
+
+    steps / 2
 }
 
 fn get_starting_pos(map: &Map) -> Coord {
@@ -123,85 +111,22 @@ fn get_starting_pos(map: &Map) -> Coord {
 }
 
 fn get_connecting_nodes(coord: Coord, map: &Map) -> Vec<Coord> {
-    get_surrounding_tiles(coord, map)
-        .into_iter()
-        .filter_map(|(node, tile)| match (node, tile) {
-            (node, Tile::Horizontal) => {
-                if (coord.0 > 0 && node == coord.left())
-                    || (coord.0 < map.len() - 1 && node == coord.right())
-                {
-                    Some(node)
-                } else {
-                    None
-                }
-            }
-            (node, Tile::Vertical) => {
-                if (coord.1 > 0 && node == coord.up())
-                    || (coord.1 < map.len() - 1 && node == coord.down())
-                {
-                    Some(node)
-                } else {
-                    None
-                }
-            }
-            (node, Tile::SW) => {
-                if (coord.1 > 0 && node == coord.up())
-                    || (coord.0 < map.len() - 1 && node == coord.right())
-                {
-                    Some(node)
-                } else {
-                    None
-                }
-            }
-            (node, Tile::SE) => {
-                if (coord.1 > 0 && node == coord.up()) || (coord.0 > 0 && node == coord.left()) {
-                    Some(node)
-                } else {
-                    None
-                }
-            }
-            (node, Tile::NE) => {
-                if (coord.1 < map.len() - 1 && node == coord.down())
-                    || (coord.0 > 0 && node == coord.left())
-                {
-                    Some(node)
-                } else {
-                    None
-                }
-            }
-            (node, Tile::NW) => {
-                if (coord.1 < map.len() - 1 && node == coord.down())
-                    || (coord.0 < map.len() - 1 && node == coord.right())
-                {
-                    Some(node)
-                } else {
-                    None
-                }
-            }
-            _ => None,
-        })
-        .collect()
+    #[allow(clippy::match_on_vec_items)]
+    match map[coord.1][coord.0] {
+        Tile::Vertical => vec![coord.up(), coord.down()],
+        Tile::Horizontal => vec![coord.left(), coord.right()],
+        Tile::NE => vec![coord.up(), coord.right()],
+        Tile::NW => vec![coord.up(), coord.left()],
+        Tile::SW => vec![coord.down(), coord.left()],
+        Tile::SE => vec![coord.down(), coord.right()],
+        _ => vec![],
+    }
 }
 
 fn parse(input: &str) -> Map {
     input
         .lines()
         .map(|line| line.chars().map(Tile::from).collect())
-        .collect()
-}
-
-fn get_surrounding_tiles(coord: Coord, map: &Map) -> Vec<(Coord, &Tile)> {
-    let x_range = coord.0.saturating_sub(1)..=(map[0].len() - 1).min(coord.0 + 1);
-    let y_range = coord.1.saturating_sub(1)..=(map.len() - 1).min(coord.1 + 1);
-
-    x_range
-        .flat_map(move |x| y_range.clone().map(move |y| (x, y)))
-        .filter(|(x, y)| {
-            (0..map.len()).contains(y)
-                && (0..map[0].len()).contains(x)
-                && (x, y) != (&coord.0, &coord.1)
-        })
-        .map(|(x, y)| (Coord(x, y), &map[y][x]))
         .collect()
 }
 
@@ -221,22 +146,6 @@ impl From<char> for Tile {
     }
 }
 
-impl Display for Tile {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let c = match self {
-            Self::Vertical => '|',
-            Self::Horizontal => '-',
-            Self::Ground => '.',
-            Self::NE => 'L',
-            Self::NW => 'J',
-            Self::SW => '7',
-            Self::SE => 'F',
-            Self::Start => 'S',
-        };
-        write!(f, "{c}")
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use crate::{parse, puzzle_one};
@@ -250,12 +159,12 @@ mod tests {
 .L-J.
 .....",
         );
-        let actual = puzzle_one(&map);
+        let actual = puzzle_one(&map, crate::Tile::SE);
         assert_eq!(actual, 4);
     }
 
     #[test]
-    fn test_puzzle_one_two() {
+    fn test_puzzle_two() {
         let map = parse(
             r"7-F7-
 .FJ|7
@@ -263,7 +172,7 @@ SJLL7
 |F--J
 LJ.LJ",
         );
-        let actual = puzzle_one(&map);
+        let actual = puzzle_one(&map, crate::Tile::SE);
         assert_eq!(actual, 8);
     }
 }
