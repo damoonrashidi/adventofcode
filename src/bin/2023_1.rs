@@ -75,7 +75,6 @@ fn part_two(lines: Lines) -> u32 {
         .sum()
 }
 
-#[allow(unused)]
 fn str_to_digit(digit: &str) -> u32 {
     match digit {
         "one" | "1" => 1,

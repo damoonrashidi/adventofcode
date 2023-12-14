@@ -100,23 +100,27 @@ fn puzzle_two(map: &Map, start_type: char) -> usize {
 }
 
 fn is_inside(point: Coord, path: &HashSet<Coord>, map: &Map) -> bool {
-    let mut inside_x = false;
-    let mut inside_y = false;
+    let mut cross_left = 0;
+    let mut cross_right = 0;
 
-    for x in 0..map[0].len() {
+    for x in 0..point.0 {
         let c = &Coord(x, point.1);
         if path.contains(c) {
-            inside_x = !inside_x;
+            cross_left += 1;
+        }
+    }
+    if cross_left % 2 == 0 {
+        return false;
+    }
+
+    for x in point.0..map[0].len() {
+        let c = &Coord(x, point.1);
+        if path.contains(c) {
+            cross_right += 1;
         }
     }
 
-    for y in 0..map.len() {
-        if path.contains(&Coord(point.0, y)) {
-            inside_y = !inside_y;
-        }
-    }
-
-    inside_x && inside_y
+    cross_right % 2 != 0
 }
 
 fn parse(input: &str) -> Map {
@@ -149,25 +153,24 @@ fn get_connecting_nodes(coord: Coord, map: &Map) -> Vec<Coord> {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
 
-    use crate::{is_inside, parse, puzzle_one, puzzle_two, Coord};
+    use crate::{parse, puzzle_two};
 
     #[test]
-    fn test_puzzle_one() {
+    fn one() {
         let map = parse(
-            r"7-F7-
-.FJ|7
-SJLL7
-|F--J
-LJ.LJ",
+            r"....F----7...........
+...S--J....|.........
+...|.......|.........
+...L-------J........",
         );
-        let actual = puzzle_one(&map, 'F');
-        assert_eq!(actual, 8);
+
+        let actual = puzzle_two(&map, 'F');
+        assert_eq!(actual, 11);
     }
 
     #[test]
-    fn test_puzzle_two() {
+    fn two() {
         let map = parse(
             r"OF----7F7F7F7F-7OOOO
 O|F--7||||||||FJOOOO
@@ -183,30 +186,5 @@ OOOOL---JOLJOLJLJOOO",
 
         let actual = puzzle_two(&map, 'F');
         assert_eq!(actual, 8);
-    }
-
-    #[test]
-    fn inside() {
-        let map = vec![
-            vec!['.', '.', '.', '.', '.'],
-            vec!['.', 'S', '-', '7', '.'],
-            vec!['.', '|', '.', '|', '.'],
-            vec!['.', 'L', '-', 'J', '.'],
-            vec!['.', '.', '.', '.', '.'],
-        ];
-        let path: HashSet<Coord> = vec![
-            Coord(1, 1),
-            Coord(1, 2),
-            Coord(1, 3),
-            Coord(2, 3),
-            Coord(3, 3),
-            Coord(3, 2),
-            Coord(3, 1),
-            Coord(2, 1),
-        ]
-        .into_iter()
-        .collect();
-        assert!(!is_inside(Coord(2, 0), &path, &map));
-        assert!(is_inside(Coord(2, 2), &path, &map));
     }
 }

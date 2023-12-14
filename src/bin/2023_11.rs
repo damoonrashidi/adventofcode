@@ -3,7 +3,6 @@ use std::collections::HashSet;
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 struct Coord(usize, usize);
 
-#[allow(unused)]
 impl Coord {
     fn distance(&self, other: Coord) -> usize {
         self.0.abs_diff(other.0) + self.1.abs_diff(other.1)

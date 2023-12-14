@@ -20,17 +20,10 @@ fn puzzle_one(instructions: &Vec<char>, map: &HashMap<&str, (&str, &str)>, find:
 }
 
 fn puzzle_two(instructions: &Vec<char>, map: &HashMap<&str, (&str, &str)>) -> usize {
-    let places: Vec<&str> = map
-        .keys()
+    map.keys()
         .filter(|place| place.ends_with('A'))
-        .copied()
-        .collect();
-
-    places
-        .into_iter()
         .map(|find| puzzle_one(instructions, map, find))
-        .reduce(lcd)
-        .unwrap()
+        .fold(0, lcd)
 }
 
 fn lcd(a: usize, b: usize) -> usize {

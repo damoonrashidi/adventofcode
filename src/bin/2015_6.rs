@@ -10,14 +10,6 @@ fn main() {
 #[derive(Debug)]
 struct Coord(usize, usize);
 
-#[derive(Debug)]
-#[allow(unused)]
-enum Instruction {
-    On(Coord, Coord),
-    Off(Coord, Coord),
-    Toggle(Coord, Coord),
-}
-
 fn puzzle_one(input: &str) -> usize {
     let mut city = vec![vec![false; 1000]; 1000];
 
