@@ -40,20 +40,20 @@ fn puzzle(input: &str, multiplier: usize) -> usize {
         .sum()
 }
 
-fn parse(input: &str) -> (Vec<Coord>, Vec<usize>, Vec<usize>) {
+fn parse(input: &str) -> (Vec<Coord>, HashSet<usize>, HashSet<usize>) {
     let map: Vec<Vec<char>> = input.lines().map(|line| line.chars().collect()).collect();
 
-    let mut ys = vec![];
+    let mut ys = HashSet::new();
     (0..map.len()).for_each(|y| {
         if map[y].clone().iter().all(|c| c == &'.') {
-            ys.push(y);
+            ys.insert(y);
         }
     });
 
-    let mut xs = vec![];
+    let mut xs = HashSet::new();
     for x in 0..map[0].len() {
         if map.iter().map(|r| r[x]).all(|c| c == '.') {
-            xs.push(x);
+            xs.insert(x);
         }
     }
 
