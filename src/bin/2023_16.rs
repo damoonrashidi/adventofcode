@@ -4,6 +4,7 @@ fn main() {
     let input = include_str!("../../inputs/2023/16.txt").trim();
 
     println!("puzzle one: {}", puzzle_one(input));
+    println!("puzzle two: {}", puzzle_two(input));
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -27,12 +28,54 @@ impl Beam {
     }
 }
 
-#[allow(clippy::cast_sign_loss)]
 fn puzzle_one(input: &str) -> usize {
     let map = parse(input);
     let beam = Beam::new(0, 0, Direction::Right);
     let mut beams = vec![beam];
     solve(&mut beams, &map, HashSet::new())
+}
+
+fn puzzle_two(input: &str) -> usize {
+    let map = parse(input);
+    let mut max_value = 0;
+
+    for i in 0..map[0].len() {
+        let beam = Beam::new(i, 0, Direction::Down);
+        let mut beams = vec![beam];
+        let v = solve(&mut beams, &map, HashSet::new());
+        if v > max_value {
+            max_value = v;
+        }
+    }
+
+    for i in 0..map[0].len() {
+        let beam = Beam::new(i, map.len() - 1, Direction::Up);
+        let mut beams = vec![beam];
+        let v = solve(&mut beams, &map, HashSet::new());
+        if v > max_value {
+            max_value = v;
+        }
+    }
+
+    for i in 0..map.len() {
+        let beam = Beam::new(0, i, Direction::Up);
+        let mut beams = vec![beam];
+        let v = solve(&mut beams, &map, HashSet::new());
+        if v > max_value {
+            max_value = v;
+        }
+    }
+
+    for i in 0..map.len() {
+        let beam = Beam::new(map[0].len() - 1, i, Direction::Up);
+        let mut beams = vec![beam];
+        let v = solve(&mut beams, &map, HashSet::new());
+        if v > max_value {
+            max_value = v;
+        }
+    }
+
+    max_value
 }
 
 #[allow(clippy::cast_possible_wrap, clippy::cast_sign_loss)]
@@ -145,11 +188,11 @@ fn parse(input: &str) -> Vec<Vec<char>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::puzzle_one;
+    use crate::puzzle_two;
 
     #[test]
     fn test_puzzle_one() {
-        let actual = puzzle_one(
+        let actual = puzzle_two(
             r".|...\....
 |.-.\.....
 .....|-...
@@ -161,6 +204,6 @@ mod tests {
 .|....-|.\
 ..//.|....",
         );
-        assert_eq!(actual, 46);
+        assert_eq!(actual, 51);
     }
 }
