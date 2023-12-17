@@ -46,29 +46,25 @@ fn puzzle_two(input: &str) -> usize {
             println!("{}%", i / 1_000_000);
         }
 
-        for (d_x, d_y) in instructions {
-            println!("going {d_x},{d_y}");
+        for (dx, dy) in instructions {
+            println!("going {dx},{dy}");
             for ball in &mut balls {
                 let mut y = ball.y as isize;
                 let mut x = ball.x as isize;
-                let mut seen_balls = 0;
 
                 while y > 0 && y < y_max as isize && x > 0 && x < x_max as isize {
-                    y += d_y;
-                    x += d_x;
+                    y += dy;
+                    x += dx;
 
-                    if map[y as usize][x as usize] == 'O' {
-                        seen_balls += 1;
-                    } else if map[y as usize][x as usize] == '#' {
-                        y -= d_y;
-                        x -= d_x;
+                    if map[y as usize][x as usize] == '#' {
+                        y -= dy;
+                        x -= dx;
                         break;
                     }
                 }
-                ball.y = (y + seen_balls) as usize;
-                ball.x = (x + seen_balls) as usize;
+                ball.y = y as usize;
+                ball.x = x as usize;
             }
-
             print_updated(map.clone(), &balls);
         }
     }
