@@ -3,24 +3,23 @@ use std::collections::HashSet;
 fn main() {
     let input = include_str!("../../inputs/2023/18.txt").trim();
 
-    println!("puzzle one: {}", puzzle_one(input));
+    let short_instructions = parse(input);
+
+    println!(
+        "puzzle one: {}",
+        puzzle_one(short_instructions, Coord(1, 1))
+    );
     println!("puzzle two: {}", puzzle_two(input));
 }
 
-fn puzzle_one(input: &str) -> usize {
-    let instructions = parse(input);
-    let mut seen: HashSet<Coord> = HashSet::new();
+fn puzzle_one(instructions: Vec<Instruction>, seed: Coord) -> usize {
+    let mut visits: HashSet<Coord> = HashSet::new();
 
     let mut x = 0isize;
     let mut y = 0isize;
 
-    let mut min_x = 0isize;
-    let mut min_y = 0isize;
-    let mut max_x = 0isize;
-    let mut max_y = 0isize;
-
-    for (instruction, _) in instructions {
-        seen.insert(Coord(x, y));
+    for instruction in instructions {
+        visits.insert(Coord(x, y));
         let (n_x, n_y) = match instruction {
             Instruction::Up(d) => (x, y - d),
             Instruction::Down(d) => (x, y + d),
@@ -45,33 +44,55 @@ fn puzzle_one(input: &str) -> usize {
 
         for _ in 0..x_diff {
             x += x_direction;
-            seen.insert(Coord(x, y));
+            visits.insert(Coord(x, y));
         }
 
         for _ in 0..y_diff {
             y += y_direction;
-            seen.insert(Coord(x, y));
+            visits.insert(Coord(x, y));
         }
-
-        min_x = x.min(min_y);
-        max_x = x.max(max_x);
-        min_y = y.min(min_y);
-        max_y = y.max(max_y);
     }
 
-    floodfill(Coord(2, 2), &mut seen);
+    floodfill(seed, &mut visits);
 
-    for y in min_y..=max_y {
-        for x in min_x..=max_x {
-            if seen.contains(&Coord(x, y)) {
-                print!("#");
-            } else {
-                print!(".");
-            }
-        }
-        println!();
+    visits.len()
+}
+
+fn puzzle_two(input: &str) -> usize {
+    let instructions = parse2(input);
+
+    let mut visits = vec![];
+    let mut x = 0isize;
+    let mut y = 0isize;
+    let mut rope_dist = 0;
+
+    for instruction in instructions {
+        visits.push(Coord(x, y));
+        let (nx, ny) = match instruction {
+            Instruction::Up(d) => (x, y - d),
+            Instruction::Down(d) => (x, y + d),
+            Instruction::Right(d) => (x + d, y),
+            Instruction::Left(d) => (x - d, y),
+        };
+
+        rope_dist += x.abs_diff(nx);
+        rope_dist += y.abs_diff(ny);
+
+        x = nx;
+        y = ny;
     }
-    seen.len()
+
+    let interior = visits
+        .chunks(2)
+        .fold(0, |sum, coords| {
+            let a = coords[0];
+            let b = coords[1];
+
+            sum + a.0 * b.1 - a.1 * b.0
+        })
+        .unsigned_abs();
+
+    interior + rope_dist / 2 + 1
 }
 
 fn floodfill(seed: Coord, list: &mut HashSet<Coord>) {
@@ -81,8 +102,6 @@ fn floodfill(seed: Coord, list: &mut HashSet<Coord>) {
         if list.contains(&coord) {
             continue;
         }
-
-        println!("checking {coord:?}");
 
         list.insert(coord);
 
@@ -95,28 +114,39 @@ fn floodfill(seed: Coord, list: &mut HashSet<Coord>) {
     }
 }
 
-fn puzzle_two(input: &str) -> usize {
-    input.len()
-}
-
-fn parse(input: &str) -> Vec<(Instruction, String)> {
+fn parse(input: &str) -> Vec<Instruction> {
     input
         .lines()
         .map(|line| {
             let split: Vec<&str> = line.split_whitespace().collect();
             let distance = split[1].parse().unwrap();
             let i = split[0];
-            let instruction = match i {
+            match i {
                 "U" => Instruction::Up(distance),
                 "R" => Instruction::Right(distance),
                 "D" => Instruction::Down(distance),
                 "L" => Instruction::Left(distance),
                 _ => unreachable!(),
-            };
+            }
+        })
+        .collect()
+}
 
-            let color = split[2].replace(['(', ')'], "");
-
-            (instruction, color)
+fn parse2(input: &str) -> Vec<Instruction> {
+    input
+        .lines()
+        .map(|line| {
+            let split: Vec<&str> = line.split_whitespace().collect();
+            let color_str = split[2].replace(['(', ')', '#'], "");
+            let color = color_str.get(..=4).unwrap();
+            let distance = isize::from_str_radix(color, 16).unwrap();
+            match color_str.chars().last() {
+                Some('0') => Instruction::Right(distance),
+                Some('1') => Instruction::Down(distance),
+                Some('2') => Instruction::Left(distance),
+                Some('3') => Instruction::Up(distance),
+                _ => unreachable!(),
+            }
         })
         .collect()
 }
@@ -149,11 +179,11 @@ enum Instruction {
 
 #[cfg(test)]
 mod tests {
-    use crate::{puzzle_one, puzzle_two};
+    use crate::{parse, puzzle_one, puzzle_two};
 
     #[test]
     fn test_puzzle_one() {
-        let actual = puzzle_one(
+        let instructions = parse(
             r"R 6 (#70c710)
 D 5 (#0dc571)
 L 2 (#5713f0)
@@ -169,26 +199,28 @@ U 3 (#a77fa3)
 L 2 (#015232)
 U 2 (#7a21e3)",
         );
+        let actual = puzzle_one(instructions, crate::Coord(-1, -1));
         assert_eq!(actual, 62);
     }
 
     #[test]
     fn test_puzzle_two() {
-        let actual = puzzle_two(r"");
-        assert_eq!(actual, 0);
+        let actual = puzzle_two(
+            r"R 6 (#70c710)
+D 5 (#0dc571)
+L 2 (#5713f0)
+D 2 (#d2c081)
+R 2 (#59c680)
+D 2 (#411b91)
+L 5 (#8ceee2)
+U 2 (#caa173)
+L 1 (#1b58a2)
+U 2 (#caa171)
+R 2 (#7807d2)
+U 3 (#a77fa3)
+L 2 (#015232)
+U 2 (#7a21e3)",
+        );
+        assert_eq!(actual, 952_408_144_115);
     }
 }
-
-/*
-
-#######
-#.....#
-###...#
-..#...#
-..#...#
-###.###
-#...#..
-##..###
-.#....#
-.######
-*/
