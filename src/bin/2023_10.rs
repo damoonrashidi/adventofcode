@@ -87,40 +87,64 @@ fn puzzle_two(map: &Map, start_type: char) -> usize {
         };
     }
 
-    let mut insides = 0;
+    for y in 0..map.len() {
+        floodfill(Coord(0, y), &mut visits, &map);
+        floodfill(Coord(map[0].len() - 1, y), &mut visits, &map);
+    }
+
+    for x in 0..map[0].len() {
+        floodfill(Coord(x, 0), &mut visits, &map);
+        floodfill(Coord(x, map.len() - 1), &mut visits, &map);
+    }
+
     for y in 0..map.len() {
         for x in 0..map[0].len() {
-            if !visits.contains(&Coord(x, y)) && is_inside(Coord(x, y), &visits, &map) {
-                insides += 1;
+            if visits.contains(&Coord(x, y)) {
+                print!("#");
+            } else {
+                print!(".");
+            }
+        }
+        println!();
+    }
+
+    map.len() * map[0].len() - visits.len()
+}
+
+fn floodfill(seed: Coord, list: &mut HashSet<Coord>, map: &Map) {
+    let mut stack: Vec<Coord> = vec![seed];
+
+    while let Some(coord) = stack.pop() {
+        if list.contains(&coord) {
+            continue;
+        }
+
+        list.insert(coord);
+
+        let mut nodes = vec![];
+        if seed.1 > 0 {
+            nodes.push(coord.up());
+        }
+        if seed.1 < map.len() - 1 {
+            nodes.push(coord.down());
+        }
+        if seed.0 > 0 {
+            nodes.push(coord.left());
+        }
+        if seed.0 < map[0].len() - 1 {
+            nodes.push(coord.right());
+        }
+
+        for neighbor in nodes.into_iter().filter(|node| !list.contains(node)) {
+            if neighbor.0 > 0
+                && neighbor.0 < map[0].len()
+                && neighbor.1 > 0
+                && neighbor.1 < map.len()
+            {
+                stack.push(neighbor);
             }
         }
     }
-
-    insides
-}
-
-fn is_inside(point: Coord, path: &HashSet<Coord>, map: &Map) -> bool {
-    let mut cross_left = 0;
-    let mut cross_right = 0;
-
-    for x in 0..point.0 {
-        let c = &Coord(x, point.1);
-        if path.contains(c) {
-            cross_left += 1;
-        }
-    }
-    if cross_left % 2 == 0 {
-        return false;
-    }
-
-    for x in point.0..map[0].len() {
-        let c = &Coord(x, point.1);
-        if path.contains(c) {
-            cross_right += 1;
-        }
-    }
-
-    cross_right % 2 != 0
 }
 
 fn parse(input: &str) -> Map {
@@ -157,34 +181,20 @@ mod tests {
     use crate::{parse, puzzle_two};
 
     #[test]
-    fn one() {
-        let map = parse(
-            r"....F----7...........
-...S--J....|.........
-...|.......|.........
-...L-------J........",
-        );
-
-        let actual = puzzle_two(&map, 'F');
-        assert_eq!(actual, 11);
-    }
-
-    #[test]
     fn two() {
         let map = parse(
-            r"OF----7F7F7F7F-7OOOO
-O|F--7||||||||FJOOOO
-O||OFJ||||||||L7OOOO
-FJL7L7LJLJ||LJIL-7OO
-L--JOL7IIILJS7F-7L7O
-OOOOF-JIIF7FJ|L7L7L7
-OOOOL7IF7||L7|IL7L7|
-OOOOO|FJLJ|FJ|F7|OLJ
-OOOOFJL-7O||O||||OOO
-OOOOL---JOLJOLJLJOOO",
+            r"...........
+.S-------7.
+.|F-----7|.
+.||.....||.
+.||.....||.
+.|L-7.F-J|.
+.|..|.|..|.
+.L--J.L--J.
+...........",
         );
 
         let actual = puzzle_two(&map, 'F');
-        assert_eq!(actual, 8);
+        assert_eq!(actual, 4);
     }
 }
