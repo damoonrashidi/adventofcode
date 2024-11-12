@@ -8,7 +8,7 @@ fn main() {
     println!("puzzle two: {}", puzzle_two(&map));
 }
 
-fn puzzle_one(map: &Vec<Vec<char>>) -> usize {
+fn puzzle_one(map: &[Vec<char>]) -> usize {
     let mut nums: Vec<usize> = vec![];
 
     let mut y = 0;
@@ -36,7 +36,7 @@ fn puzzle_one(map: &Vec<Vec<char>>) -> usize {
     nums.into_iter().sum()
 }
 
-fn puzzle_two(map: &Vec<Vec<char>>) -> usize {
+fn puzzle_two(map: &[Vec<char>]) -> usize {
     let mut gear_map: HashMap<String, Vec<usize>> = HashMap::new();
 
     let mut y = 0;
@@ -134,7 +134,7 @@ mod tests {
 .664.598.."
             .lines()
             .map(|line| line.chars().collect())
-            .collect();
+            .collect::<Vec<Vec<char>>>();
 
         let actual = puzzle_two(&map);
         assert_eq!(actual, 47835);

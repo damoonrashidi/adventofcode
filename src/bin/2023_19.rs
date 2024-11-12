@@ -59,11 +59,11 @@ fn puzzle_one(input: &str) -> usize {
                     match &condition.action {
                         Action::Approve => {
                             accepted.push(x + m + a + s);
-                            wf_name = "in".to_owned();
+                            wf_name = String::from("in");
                             continue 'outer;
                         }
                         Action::Reject => {
-                            wf_name = "in".to_owned();
+                            wf_name = String::from("in");
                             continue 'outer;
                         }
                         Action::Workflow(name) => {

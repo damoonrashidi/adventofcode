@@ -7,7 +7,7 @@ fn main() {
     println!("puzzle two: {}", puzzle_two(&instructions, &map));
 }
 
-fn puzzle_one(instructions: &Vec<char>, map: &HashMap<&str, (&str, &str)>, find: &str) -> usize {
+fn puzzle_one(instructions: &[char], map: &HashMap<&str, (&str, &str)>, find: &str) -> usize {
     let (mut steps, mut i) = (0, 0);
     let mut node = find;
     while !node.ends_with('Z') {
@@ -19,7 +19,7 @@ fn puzzle_one(instructions: &Vec<char>, map: &HashMap<&str, (&str, &str)>, find:
     steps
 }
 
-fn puzzle_two(instructions: &Vec<char>, map: &HashMap<&str, (&str, &str)>) -> usize {
+fn puzzle_two(instructions: &[char], map: &HashMap<&str, (&str, &str)>) -> usize {
     map.keys()
         .filter(|place| place.ends_with('A'))
         .map(|find| puzzle_one(instructions, map, find))

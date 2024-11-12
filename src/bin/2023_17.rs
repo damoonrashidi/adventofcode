@@ -18,11 +18,9 @@ fn puzzle_two(input: &str) -> usize {
 fn parse(input: &str) -> Vec<Vec<usize>> {
     input
         .lines()
-        .enumerate()
-        .map(|(_y, line)| {
+        .map(|line| {
             line.chars()
-                .enumerate()
-                .map(|(_x, c)| c.to_string().parse().unwrap())
+                .map(|c| c.to_string().parse().unwrap())
                 .collect()
         })
         .collect()
