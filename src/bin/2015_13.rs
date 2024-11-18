@@ -92,7 +92,7 @@ fn puzzle_one(input: &str) -> isize {
 fn puzzle_two(input: &str) -> isize {
     let (mut map, mut set) = parse(input);
     set.insert("Me");
-    for (_, sub) in map.iter_mut() {
+    for (_, sub) in &mut map.iter_mut() {
         sub.insert("Me", 0);
     }
 
