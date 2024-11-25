@@ -1,33 +1,12 @@
 use std::collections::{HashMap, HashSet};
 
+use itertools::Itertools;
+
 fn main() {
     let input = include_str!("../../inputs/2015/13.txt").trim();
 
     println!("puzzle one: {}", puzzle_one(input));
     println!("puzzle two: {}", puzzle_two(input));
-}
-
-fn permutations<T: Clone>(mut list: Vec<T>) -> Vec<Vec<T>> {
-    match list.len() {
-        0 => return vec![],
-        1 => return vec![list],
-        _ => {}
-    }
-
-    let mut result = Vec::with_capacity(list.len() * permutations(list[1..].to_vec()).len());
-
-    let first = list.remove(0);
-    let perms = permutations(list);
-
-    for perm in perms {
-        for i in 0..=perm.len() {
-            let mut new_perm = perm.clone();
-            new_perm.insert(i, first.clone());
-            result.push(new_perm);
-        }
-    }
-
-    result
 }
 
 fn parse(input: &str) -> (HashMap<&str, HashMap<&str, isize>>, HashSet<&str>) {
@@ -57,8 +36,8 @@ fn parse(input: &str) -> (HashMap<&str, HashMap<&str, isize>>, HashSet<&str>) {
 
 fn puzzle_one(input: &str) -> isize {
     let (map, set) = parse(input);
-    let list = set.into_iter().collect();
-    let perms = permutations(list);
+    let k = set.len();
+    let perms: Vec<Vec<&str>> = set.into_iter().permutations(k).collect();
     let mut cost = 0;
 
     for permutation in perms {
@@ -103,8 +82,8 @@ fn puzzle_two(input: &str) -> isize {
     }
     map.insert("Me", my_map);
 
-    let list = set.into_iter().collect();
-    let perms = permutations(list);
+    let k = set.len();
+    let perms: Vec<Vec<&str>> = set.into_iter().permutations(k).collect();
     let mut cost = 0;
 
     for permutation in perms {
