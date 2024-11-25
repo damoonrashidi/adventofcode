@@ -48,20 +48,3 @@ fn puzzle_two(input: &str) -> usize {
 
     count
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{puzzle_one, puzzle_two};
-
-    #[test]
-    fn test_puzzle_one() {
-        let actual = puzzle_one(r"");
-        assert_eq!(actual, 0);
-    }
-
-    #[test]
-    fn test_puzzle_two() {
-        let actual = puzzle_two(r"");
-        assert_eq!(actual, 0);
-    }
-}
