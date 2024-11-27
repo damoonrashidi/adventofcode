@@ -10,7 +10,6 @@ fn main() {
 fn puzzle_one(input: &str) -> String {
     let parsed = input
         .lines()
-        .into_iter()
         .map(|line| line.chars().collect())
         .collect::<Vec<Vec<char>>>();
 
@@ -18,22 +17,22 @@ fn puzzle_one(input: &str) -> String {
 
     for x in 0..parsed[0].len() {
         let mut map = HashMap::new();
-        for y in 0..parsed.len() {
+        (0..parsed.len()).for_each(|y| {
             let chr = parsed[y][x];
             if let Some(count) = map.get(&chr) {
                 map.insert(chr, count + 1);
             } else {
                 map.insert(chr, 1);
             }
-        }
+        });
         let mut most = 0;
         let mut lead = ' ';
-        map.iter_mut().for_each(|(chr, count)| {
+        for (chr, count) in &mut map {
             if *count > most {
                 most = *count;
                 lead = *chr;
             }
-        });
+        }
         password.push(lead);
     }
 
@@ -43,7 +42,6 @@ fn puzzle_one(input: &str) -> String {
 fn puzzle_two(input: &str) -> String {
     let parsed = input
         .lines()
-        .into_iter()
         .map(|line| line.chars().collect())
         .collect::<Vec<Vec<char>>>();
 
@@ -51,22 +49,22 @@ fn puzzle_two(input: &str) -> String {
 
     for x in 0..parsed[0].len() {
         let mut map = HashMap::new();
-        for y in 0..parsed.len() {
+        (0..parsed.len()).for_each(|y| {
             let chr = parsed[y][x];
             if let Some(count) = map.get(&chr) {
                 map.insert(chr, count + 1);
             } else {
                 map.insert(chr, 1);
             }
-        }
+        });
         let mut least = isize::MAX;
         let mut lead = ' ';
-        map.iter_mut().for_each(|(chr, count)| {
+        for (chr, count) in &mut map {
             if *count < least {
                 least = *count;
                 lead = *chr;
             }
-        });
+        }
         password.push(lead);
     }
 
@@ -96,7 +94,7 @@ dvrsen
 enarar",
         );
         assert_eq!(actual, "easter".to_string());
-        }
+    }
 
     #[test]
     fn test_puzzle_two() {
