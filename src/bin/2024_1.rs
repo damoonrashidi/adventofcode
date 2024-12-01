@@ -41,11 +41,7 @@ fn puzzle_two(input: &str) -> usize {
         let s = split[1].parse::<usize>().unwrap();
         list.push(f);
 
-        if let Some(prev) = map.get(&s) {
-            map.insert(s, prev + 1);
-        } else {
-            map.insert(s, 1);
-        }
+        *map.entry(s).or_insert(0) += 1;
     });
 
     (0..list.len()).for_each(|i| {

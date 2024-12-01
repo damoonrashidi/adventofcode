@@ -19,11 +19,7 @@ fn puzzle_one(input: &str) -> String {
         let mut map = HashMap::new();
         (0..parsed.len()).for_each(|y| {
             let chr = parsed[y][x];
-            if let Some(count) = map.get(&chr) {
-                map.insert(chr, count + 1);
-            } else {
-                map.insert(chr, 1);
-            }
+            *map.entry(chr).or_insert(1) += 1;
         });
         let mut most = 0;
         let mut lead = ' ';
@@ -51,11 +47,7 @@ fn puzzle_two(input: &str) -> String {
         let mut map = HashMap::new();
         (0..parsed.len()).for_each(|y| {
             let chr = parsed[y][x];
-            if let Some(count) = map.get(&chr) {
-                map.insert(chr, count + 1);
-            } else {
-                map.insert(chr, 1);
-            }
+            *map.entry(chr).or_insert(1) += 1;
         });
         let mut least = isize::MAX;
         let mut lead = ' ';

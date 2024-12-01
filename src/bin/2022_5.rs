@@ -85,11 +85,9 @@ fn parse_state(input: &str) -> HashMap<usize, String> {
                 return;
             }
 
-            if let Some(s) = map.get(&column) {
-                map.insert(column, format!("{}{}", s, letter[1] as char));
-            } else {
-                map.insert(column, format!("{}", letter[1] as char));
-            };
+            map.entry(column)
+                .and_modify(|s| *s += &(letter[1] as char).to_string())
+                .or_insert((letter[1] as char).to_string());
         });
 
     map

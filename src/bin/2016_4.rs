@@ -24,11 +24,7 @@ impl From<&str> for Room {
         value.chars().take_while(|c| c != &'[').for_each(|c| {
             if c.is_alphabetic() {
                 raw.push(c);
-                if let Some(count) = letters.get(&c) {
-                    letters.insert(c, count + 1);
-                } else {
-                    letters.insert(c, 1);
-                }
+                *letters.entry(c).or_insert(1) += 1;
             } else if c.is_numeric() {
                 sector.push(c);
             }
