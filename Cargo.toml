@@ -11,8 +11,9 @@ md5 = "0.7.0"
 regex = "1.7.0"
 
 [lints.clippy]
-all = "deny"
-pedantic = "deny"
+all = { level = "deny", priority = 0 }
+needless_range_loop = { level = "allow", priority = 1 }
+pedantic = { level = "deny", priority = 2 }
 
 [lints.rust]
 unsafe_code = "forbid"
