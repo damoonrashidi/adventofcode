@@ -14,37 +14,28 @@ fn puzzle_one(input: &str) -> usize {
     let height = grid.len();
     let width = grid[0].len();
 
-    let mut count = 0;
+    let get_span = |x: usize, y: usize, dx: isize, dy: isize| -> String {
+        (0..4)
+            .filter_map(|delta| {
+                let ny = y.checked_add_signed(dy * delta)?;
+                let nx = x.checked_add_signed(dx * delta)?;
+                grid.get(ny)?.get(nx)
+            })
+            .collect()
+    };
 
+    let mut count = 0;
     for y in 0..height {
         for x in 0..width {
-            let span_x = grid[y][x..(x + 4).min(width)].iter().collect::<String>();
-            let span_y = grid[y..(y + 4).min(height)]
-                .iter()
-                .map(|r| r[x])
-                .collect::<String>();
-            let span_down = (0..4)
-                .filter(|delta| {
-                    (0..width).contains(&(x + delta)) && (0..height).contains(&(y + delta))
-                })
-                .map(|delta| grid[y + delta][x + delta])
-                .collect::<String>();
-            let span_up = (0..4)
-                .filter(|delta| y.checked_sub(*delta).is_some() && x.checked_sub(*delta).is_some())
-                .map(|delta| grid[y - delta][x - delta])
-                .collect::<String>();
-            if span_down == "XMAS" || span_down == "SAMX" {
-                count += 1;
-            }
-            if span_up == "XMAS" || span_up == "SAMX" {
-                count += 1;
-            }
-            if span_x == "XMAS" || span_x == "SAMX" {
-                count += 1;
-            }
-            if span_y == "XMAS" || span_y == "SAMX" {
-                count += 1;
-            }
+            count += [
+                get_span(x, y, 1, 0),
+                get_span(x, y, 0, 1),
+                get_span(x, y, 1, 1),
+                get_span(x, y, 1, -1),
+            ]
+            .iter()
+            .filter(|&s| s == "XMAS" || s == "SAMX")
+            .count();
         }
     }
 
