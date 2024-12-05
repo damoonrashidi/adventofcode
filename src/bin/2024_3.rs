@@ -7,17 +7,15 @@ fn main() {
 
 fn puzzle_one(input: &str) -> usize {
     let options = input.split("mul(").collect::<Vec<_>>();
-    let mut total = 0;
-    for option in &options {
-        let scan = option.chars().take_while(|c| c != &')').collect::<String>();
-        if let Some((a, b)) = scan.split_once(',') {
-            if let (Ok(a), Ok(b)) = (a.parse::<usize>(), b.parse::<usize>()) {
-                total += a * b;
-            }
-        }
-    }
-
-    total
+    options
+        .iter()
+        .filter_map(|option| {
+            let scan = option.chars().take_while(|c| c != &')').collect::<String>();
+            let (a, b) = scan.split_once(',')?;
+            let (a, b) = (a.parse::<usize>().ok()?, b.parse::<usize>().ok()?);
+            Some(a * b)
+        })
+        .sum::<usize>()
 }
 
 fn puzzle_two(input: &str) -> usize {
