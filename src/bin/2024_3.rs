@@ -6,9 +6,8 @@ fn main() {
 }
 
 fn puzzle_one(input: &str) -> usize {
-    let options = input.split("mul(").collect::<Vec<_>>();
-    options
-        .iter()
+    input
+        .split("mul(")
         .filter_map(|option| {
             let scan = option.chars().take_while(|c| c != &')').collect::<String>();
             let (a, b) = scan.split_once(',')?;

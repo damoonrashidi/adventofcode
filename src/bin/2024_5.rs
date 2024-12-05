@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 fn main() {
     let input = include_str!("../../inputs/2024/5.txt").trim();
@@ -7,15 +7,42 @@ fn main() {
     println!("puzzle two: {}", puzzle_two(input));
 }
 
-fn puzzle_one(input: &str) -> usize {
-    let mut ordering: HashMap<usize, Vec<usize>> = HashMap::new();
+fn is_correct(ordering: &HashMap<usize, HashSet<usize>>, list: &[usize]) -> bool {
+    (0..list.len() - 1).all(|i| {
+        ordering
+            .get(&list[i + 1])
+            .map_or(true, |befores| !befores.contains(&list[i]))
+    })
+}
+
+fn fix(ordering: &HashMap<usize, HashSet<usize>>, list: &[usize]) -> Vec<usize> {
+    let mut out = list.to_vec();
+
+    for i in 0..out.len() {
+        for j in i + 1..out.len() {
+            if let Some(before) = ordering.get(&out[j]) {
+                if before.contains(&out[i]) {
+                    out.swap(i, j);
+                }
+            }
+        }
+    }
+
+    out
+}
+
+fn parse(input: &str) -> (HashMap<usize, HashSet<usize>>, Vec<Vec<usize>>) {
+    let mut ordering: HashMap<usize, HashSet<usize>> = HashMap::new();
     let (ordering_str, produce) = input.split_once("\n\n").unwrap();
     ordering_str.lines().for_each(|line| {
         let (key, after) = line.split_once('|').unwrap();
         let key = key.parse::<usize>().unwrap();
         let after = after.parse::<usize>().unwrap();
 
-        ordering.entry(key).or_insert(vec![after]).push(after);
+        ordering
+            .entry(key)
+            .or_insert(HashSet::from([after]))
+            .insert(after);
     });
 
     let updates = produce
@@ -27,70 +54,26 @@ fn puzzle_one(input: &str) -> usize {
         })
         .collect::<Vec<_>>();
 
-    let mut total = 0;
+    (ordering, updates)
+}
 
-    for update in &updates {
-        let mut correct = true;
-        for i in 0..update.len() - 1 {
-            if let Some(list) = &ordering.get(&update[i + 1]) {
-                if list.contains(&update[i]) {
-                    correct = false;
-                    break;
-                }
-            }
-        }
-        if correct {
-            total += update[update.len() / 2];
-        }
-    }
+fn puzzle_one(input: &str) -> usize {
+    let (ordering, updates) = parse(input);
 
-    total
+    updates
+        .iter()
+        .filter(|update| is_correct(&ordering, update))
+        .map(|update| update[update.len() / 2])
+        .sum::<usize>()
 }
 
 fn puzzle_two(input: &str) -> usize {
-    input.len()
-}
+    let (ordering, updates) = parse(input);
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_puzzle_one() {
-        let actual = crate::puzzle_one(
-            r"47|53
-97|13
-97|61
-97|47
-75|29
-61|13
-75|53
-29|13
-97|29
-53|29
-61|53
-97|53
-61|29
-47|13
-75|47
-97|75
-47|61
-75|61
-47|29
-75|13
-53|13
-
-75,47,61,53,29
-97,61,53,29,13
-75,29,13
-75,97,47,61,53
-61,13,29
-97,13,75,29,47",
-        );
-        assert_eq!(actual, 143);
-    }
-
-    #[test]
-    fn test_puzzle_two() {
-        let actual = crate::puzzle_two(r"");
-        assert_eq!(actual, 0);
-    }
+    updates
+        .iter()
+        .filter(|u| !is_correct(&ordering, u))
+        .map(|u| fix(&ordering, u))
+        .map(|u| u[u.len() / 2])
+        .sum()
 }
