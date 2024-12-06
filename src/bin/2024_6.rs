@@ -1,5 +1,7 @@
 use std::collections::HashSet;
 
+use rayon::prelude::*;
+
 fn main() {
     let input = include_str!("../../inputs/2024/6.txt").trim();
 
@@ -29,11 +31,8 @@ fn solve(walls: &[Vec<bool>], (mut x, mut y): (usize, usize)) -> Option<HashSet<
             Dir::Down => (0, 1),
             Dir::Left => (-1, 0),
         };
-        let Some(new_x) = x.checked_add_signed(dx) else {
-            break;
-        };
-
-        let Some(new_y) = y.checked_add_signed(dy) else {
+        let (Some(new_x), Some(new_y)) = (x.checked_add_signed(dx), y.checked_add_signed(dy))
+        else {
             break;
         };
 
@@ -87,18 +86,16 @@ fn puzzle_one(input: &str) -> usize {
 fn puzzle_two(input: &str) -> usize {
     let (walls, (x, y)) = parse(input);
 
-    let visited = solve(&walls, (x, y)).unwrap();
-
-    let mut count = 0;
-    for (nx, ny) in visited {
-        let mut walls = walls.clone();
-        walls[ny][nx] = true;
-        if solve(&walls, (x, y)).is_none() {
-            count += 1;
-        }
-    }
-
-    count
+    solve(&walls, (x, y))
+        .unwrap()
+        .into_par_iter()
+        .map(|(nx, ny)| {
+            let mut walls = walls.clone();
+            walls[ny][nx] = true;
+            solve(&walls, (x, y))
+        })
+        .filter(Option::is_none)
+        .count()
 }
 
 #[cfg(test)]
