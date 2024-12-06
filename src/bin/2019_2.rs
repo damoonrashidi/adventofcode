@@ -11,6 +11,9 @@ fn puzzle_one(input: &str) -> usize {
         .map(|c| c.parse::<usize>().unwrap())
         .collect::<Vec<_>>();
 
+    codes[1] = 12;
+    codes[2] = 2;
+
     for i in (0..codes.len()).step_by(4) {
         match codes.get(i) {
             Some(1) => {
@@ -32,13 +35,47 @@ fn puzzle_one(input: &str) -> usize {
         }
     }
 
-    println!("{codes:?}");
-
     codes[0]
 }
 
 fn puzzle_two(input: &str) -> usize {
-    input.len()
+    let codes = input
+        .split(',')
+        .map(|c| c.parse::<usize>().unwrap())
+        .collect::<Vec<_>>();
+
+    for x in 0..100 {
+        for y in 0..100 {
+            let mut codes = codes.clone();
+            codes[1] = x;
+            codes[2] = y;
+            for i in (0..codes.len()).step_by(4) {
+                match codes.get(i) {
+                    Some(1) => {
+                        let output = codes[i + 3];
+                        let a = codes[i + 1];
+                        let b = codes[i + 2];
+                        codes[output] = codes[a] + codes[b];
+                    }
+                    Some(2) => {
+                        let output = codes[i + 3];
+                        let a = codes[i + 1];
+                        let b = codes[i + 2];
+                        codes[output] = codes[a] * codes[b];
+                    }
+                    Some(99) => {
+                        break;
+                    }
+                    _ => unreachable!(),
+                }
+            }
+            if codes[0] == 19_690_720 {
+                return 100 * x + y;
+            }
+        }
+    }
+
+    0
 }
 
 #[cfg(test)]
