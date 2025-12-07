@@ -36,7 +36,7 @@ fn puzzle_two(input: &str) -> usize {
                     boxes[i].remove(f_i);
                 }
             }
-        };
+        }
     });
 
     boxes
@@ -51,12 +51,12 @@ fn puzzle_two(input: &str) -> usize {
         .sum()
 }
 
-fn make_instruction(word: &str) -> Instruction {
+fn make_instruction(word: &str) -> Instruction<'_> {
     if word.contains('=') {
         let (a, b) = word.split_once('=').unwrap();
         return Instruction::Assign(a, b.parse().unwrap());
     }
-    return Instruction::Remove(word.strip_suffix('-').unwrap());
+    Instruction::Remove(word.strip_suffix('-').unwrap())
 }
 
 fn hash(word: Chars) -> u32 {

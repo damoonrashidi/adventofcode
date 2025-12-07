@@ -15,7 +15,7 @@ fn puzzle_one(input: &str) -> usize {
         ("vizslas", 0),
         ("goldfish", 5),
         ("trees", 3),
-        ("cars", 2),
+                    ("cars", 2),
         ("perfumes", 1),
     ]);
 

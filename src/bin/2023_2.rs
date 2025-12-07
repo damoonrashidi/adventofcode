@@ -75,7 +75,7 @@ fn power_of_min(line: &str) -> usize {
                 }
             }
             _ => unreachable!(),
-        };
+        }
     }
     max_r * max_g * max_b
 }

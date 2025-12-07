@@ -13,7 +13,7 @@ fn puzzle_one(input: &str) -> usize {
 
         if slice.len() == 4 {
             return i + 4;
-        };
+        }
     }
     panic!("No marker found");
 }
@@ -24,7 +24,7 @@ fn puzzle_two(input: &str) -> usize {
 
         if slice.len() == 14 {
             return i + 14;
-        };
+            }
     }
     panic!("No marker found");
 }

@@ -18,7 +18,7 @@ fn puzzle_one(input: &str) -> usize {
             '<' => santa.0 -= 1,
             '>' => santa.0 += 1,
             _ => unreachable!(),
-        };
+        }
 
         houses.insert(format!("{}:{}", santa.0, santa.1));
     }
@@ -39,7 +39,7 @@ fn puzzle_two(input: &str) -> usize {
                 '<' => santa.0 -= 1,
                 '>' => santa.0 += 1,
                 _ => unreachable!(),
-            };
+            }
             houses.insert(format!("{}:{}", santa.0, santa.1));
         } else {
             match c {
@@ -48,7 +48,7 @@ fn puzzle_two(input: &str) -> usize {
                 '<' => robot.0 -= 1,
                 '>' => robot.0 += 1,
                 _ => unreachable!(),
-            };
+            }
             houses.insert(format!("{}:{}", robot.0, robot.1));
         }
     }

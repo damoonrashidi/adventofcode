@@ -112,7 +112,7 @@ fn parse(input: &str) -> (PartsList, HashMap<String, Workflow>) {
             let v: Vec<usize> = line
                 .replace(['{', '}'], "")
                 .split(',')
-                .map(|c| c.split('=').last().unwrap().parse::<usize>().unwrap())
+                .map(|c| c.split('=').next_back().unwrap().parse::<usize>().unwrap())
                 .collect();
 
             (v[0], v[1], v[2], v[3])
@@ -131,7 +131,7 @@ fn parse_workflow(line: &str) -> Workflow {
 
     let (name, action) = {
         let (name, _) = line.split_once('{').unwrap();
-        let action = match line.split(',').last().unwrap().replace('}', "").as_str() {
+        let action = match line.split(',').next_back().unwrap().replace('}', "").as_str() {
             "A" => Action::Approve,
             "R" => Action::Reject,
             workflow => Action::Workflow(workflow.to_string()),

@@ -81,7 +81,7 @@ impl<'a> Module<'a> for Broadcaster<'a> {
     }
 }
 
-impl<'a> Conjunction<'a> {
+impl Conjunction<'_> {
     fn new(name: String) -> Self {
         Self {
             name,
@@ -91,7 +91,7 @@ impl<'a> Conjunction<'a> {
     }
 }
 
-impl<'a> FlipFlop<'a> {
+impl FlipFlop<'_> {
     fn new(name: String) -> Self {
         Self {
             name,

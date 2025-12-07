@@ -36,7 +36,7 @@ fn puzzle_one(map: &Map, start_type: char) -> usize {
     let mut node = get_starting_pos(&map);
     let start = node;
     let mut last = start;
-    let mut steps = 0;
+    let mut steps: usize = 0;
     map[start.1][start.0] = start_type;
 
     loop {
@@ -58,7 +58,7 @@ fn puzzle_one(map: &Map, start_type: char) -> usize {
         }
     }
 
-    (steps + 1) / 2
+    steps.div_ceil(2)
 }
 
 fn puzzle_two(map: &Map, start_type: char) -> usize {

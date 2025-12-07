@@ -16,7 +16,7 @@ struct State<'a, 'b> {
     cities: &'b HashSet<&'b str>,
 }
 
-impl<'a, 'b> State<'a, 'b> {
+impl State<'_, '_> {
     fn is_complete(&self) -> bool {
         self.visited.len() == self.cities.len()
     }

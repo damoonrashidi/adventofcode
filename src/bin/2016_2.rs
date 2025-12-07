@@ -28,7 +28,7 @@ fn puzzle_one(input: &str) -> usize {
                     y = (y + 1).min(2);
                 }
                 _ => unreachable!(),
-            };
+            }
         }
 
         answer.push(keypad[y][x]);
@@ -74,7 +74,7 @@ fn puzzle_two(input: &str) -> String {
                     y = (y + 1).min(4);
                 }
                 _ => unreachable!(),
-            };
+            }
 
             if keypad[y][x] == '0' {
                 x = old_x;
